@@ -14,6 +14,7 @@ import (
 	"io/ioutil"
 	"os"
 	"strconv"
+	"strings"
 )
 
 // Monproc -  a process monitor for Debian Linux Distros.
@@ -21,17 +22,17 @@ type Monproc interface {
 	// calcCPU
 	// setState()
 	getUptime()
-	rFile(p string) []byte
+	rFile(p string) string
 }
 
 type process struct {
 	Monproc
 	path      string
-	uptime    int
-	utime     uint16
-	stime     uint16
-	cutime    uint16
-	cstime    uint16
+	uptime    float64
+	utime     int
+	stime     int
+	cutime    int
+	cstime    int
 	starttime int
 	hertz     int
 	state     string
@@ -55,14 +56,15 @@ func (mp *process) setState(s rune) {
 	mp.state = statemap[s]
 }
 
-func (mp process) rFile(p string) []byte {
+func (mp process) rFile(p string) string {
 	content, _ := ioutil.ReadFile(mp.path + p)
-	return content
+	return string(content)
 }
 
 func (mp *process) getUptime() {
 	uptimeOUT := mp.rFile("uptime")
-	fmt.Println(uptimeOUT)
+	mp.uptime, _ = strconv.ParseFloat(strings.Split(uptimeOUT, " ")[0], 64)
+	fmt.Println(mp.uptime)
 }
 
 // GetProcesses - get percentage of CPU usage per running process
@@ -73,20 +75,19 @@ func GetProcesses() {
 		fmt.Println("Read error. Are you root?")
 		os.Exit(1)
 	}
-	for i, pid := range files {
-		intPID, err := strconv.Atoi(pid.Name())
+	for _, pid := range files {
+		PID, err := strconv.Atoi(pid.Name())
 		if err != nil {
 			continue
 		}
 
 		// ** remove this ** //
-		if i < 3000 {
+		if PID < 2000 {
 			continue
 		}
 		// ***************** //
-
 		var monproc Monproc
-		monproc = &process{path: path + pid.Name(), pid: intPID}
+		monproc = &process{path: path, pid: PID}
 		monproc.getUptime()
 
 		// ** remove this when goroutines added ** //
