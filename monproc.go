@@ -10,11 +10,11 @@ package main
 // add wtfBUFF in a struct to share output of
 
 import (
+	"bytes"
 	"fmt"
 	"io/ioutil"
 	"os"
 	"strconv"
-	"strings"
 )
 
 // Monproc -  a process monitor for Debian Linux Distros.
@@ -22,7 +22,7 @@ type Monproc interface {
 	// calcCPU
 	// setState()
 	getUptime()
-	rFile(p string) string
+	rFile(p string) []byte
 }
 
 type process struct {
@@ -56,14 +56,16 @@ func (mp *process) setState(s rune) {
 	mp.state = statemap[s]
 }
 
-func (mp process) rFile(p string) string {
+func (mp process) rFile(p string) []byte {
 	content, _ := ioutil.ReadFile(mp.path + p)
-	return string(content)
+	return content
 }
 
 func (mp *process) getUptime() {
-	uptimeOUT := mp.rFile("uptime")
-	mp.uptime, _ = strconv.ParseFloat(strings.Split(uptimeOUT, " ")[0], 64)
+	uptimeOut := bytes.Split(mp.rFile("uptime"), []byte(" "))
+	var uptime float64
+	fmt.Fscanf(bytes.NewReader(uptimeOut[0]), "%f", &uptime)
+	mp.uptime = uptime
 	fmt.Println(mp.uptime)
 }
 
