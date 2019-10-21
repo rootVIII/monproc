@@ -7,14 +7,13 @@ package main
 		-> search 'uptime' and 'stat'
 */
 
-// add wtfBUFF in a struct to share output of
-
 import (
 	"bytes"
 	"fmt"
 	"io/ioutil"
 	"os"
 	"strconv"
+	"strings"
 )
 
 // Monproc -  a process monitor for Debian Linux Distros.
@@ -22,6 +21,7 @@ type Monproc interface {
 	// calcCPU
 	// setState()
 	getUptime()
+	getStat()
 	rFile(p string) []byte
 }
 
@@ -36,11 +36,13 @@ type process struct {
 	starttime int
 	hertz     int
 	state     string
-	pid       int
+	pid       string
+	name      string
 }
 
 func (mp *process) setState(s rune) {
 	statemap := map[rune]string{
+		'I': "Idle",
 		'R': "Running",
 		'S': "Sleeping in an interruptible wait",
 		'D': "Waiting in uninterruptible disk sleep",
@@ -66,7 +68,19 @@ func (mp *process) getUptime() {
 	var uptime float64
 	fmt.Fscanf(bytes.NewReader(uptimeOut[0]), "%f", &uptime)
 	mp.uptime = uptime
+
 	fmt.Println(mp.uptime)
+}
+
+func (mp *process) getStat() {
+	statOut := strings.Split(string(mp.rFile(mp.pid+"/stat")), " ")
+	fmt.Printf("%s\n", statOut)
+	mp.name = statOut[1][1 : len(statOut[1])-1]
+	state := []rune(statOut[2])
+	mp.setState(state[0])
+
+	fmt.Println(mp.name)
+	fmt.Println(mp.state)
 }
 
 // GetProcesses - get percentage of CPU usage per running process
@@ -89,8 +103,9 @@ func GetProcesses() {
 		}
 		// ***************** //
 		var monproc Monproc
-		monproc = &process{path: path, pid: PID}
+		monproc = &process{path: path, pid: strconv.Itoa(PID)}
 		monproc.getUptime()
+		monproc.getStat()
 
 		// ** remove this when goroutines added ** //
 		break
