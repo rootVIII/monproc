@@ -76,8 +76,7 @@ func (mp *process) getStat() {
 	statOut := strings.Split(string(mp.rFile(mp.pid+"/stat")), " ")
 	fmt.Printf("%s\n", statOut)
 	mp.name = statOut[1][1 : len(statOut[1])-1]
-	state := []rune(statOut[2])
-	mp.setState(state[0])
+	mp.setState([]rune(statOut[2])[0])
 
 	fmt.Println(mp.name)
 	fmt.Println(mp.state)
