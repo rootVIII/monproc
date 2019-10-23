@@ -118,7 +118,7 @@ func monProcWrpr(procPath string, pid string, toMain chan<- [3]string) {
 	}
 	monproc.calcCPU()
 	name, status, percent := monproc.getProcessDetails()
-	results := [3]string{name, status, fmt.Sprintf("%.3f", percent)}
+	results := [3]string{name, status, fmt.Sprintf("%.4f", percent)}
 	toMain <- results
 }
 
