@@ -23,7 +23,7 @@ import (
 
 // Monproc -  a process monitor for Debian Linux Distros.
 type Monproc interface {
-	// calcCPU
+	calcCPU()
 	getCPUSeconds()
 	setState(s rune)
 	getUptime()
@@ -84,12 +84,11 @@ func (mp *process) getStat() {
 	statOut := strings.Split(string(mp.rFile(mp.pid+"/stat")), " ")
 	mp.name = statOut[1][1 : len(statOut[1])-1]
 	mp.setState([]rune(statOut[2])[0])
-
-	fmt.Printf("%s\n", statOut)
-	fmt.Printf("uptime: %f\n", mp.uptime)
-	fmt.Println("name: " + mp.name)
-	fmt.Println("state: " + mp.state)
-	fmt.Printf("cpu seconds/herts: %d\n", mp.hertz)
+	mp.utime, _ = strconv.Atoi(statOut[13])
+	mp.stime, _ = strconv.Atoi(statOut[14])
+	mp.cutime, _ = strconv.Atoi(statOut[15])
+	mp.cstime, _ = strconv.Atoi(statOut[16])
+	mp.starttime, _ = strconv.Atoi(statOut[21])
 }
 
 // GetProcesses - get percentage of CPU usage per running process
@@ -116,6 +115,7 @@ func GetProcesses() {
 		monproc.getUptime()
 		monproc.getCPUSeconds()
 		monproc.getStat()
+		monproc.calcCPU()
 
 		// ** remove this when goroutines added ** //
 		break
