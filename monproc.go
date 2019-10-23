@@ -24,11 +24,11 @@ import (
 // Monproc -  a process monitor for Debian Linux Distros.
 type Monproc interface {
 	calcCPU()
-	getCPUSeconds()
 	getProcessDetails() (string, string, float64)
 	setState(s rune)
-	getUptime()
-	getStat()
+	getUptime(out chan<- struct{})
+	getStat(out chan<- struct{})
+	getCPUSeconds(out chan<- struct{})
 	rFile(p string) []byte
 }
 
@@ -76,8 +76,9 @@ func (mp *process) calcCPU() {
 	mp.percentage = 100 * ((float64(total) / float64(mp.hertz)) / sec)
 }
 
-func (mp *process) getCPUSeconds() {
+func (mp *process) getCPUSeconds(out chan<- struct{}) {
 	mp.hertz = int(C.cpuSeconds())
+	out <- struct{}{}
 }
 
 func (mp process) rFile(p string) []byte {
@@ -85,14 +86,15 @@ func (mp process) rFile(p string) []byte {
 	return content
 }
 
-func (mp *process) getUptime() {
+func (mp *process) getUptime(out chan<- struct{}) {
 	uptimeOut := bytes.Split(mp.rFile("uptime"), []byte(" "))
 	var uptime float64
 	fmt.Fscanf(bytes.NewReader(uptimeOut[0]), "%f", &uptime)
 	mp.uptime = uptime
+	out <- struct{}{}
 }
 
-func (mp *process) getStat() {
+func (mp *process) getStat(out chan<- struct{}) {
 	statOut := strings.Split(string(mp.rFile(mp.pid+"/stat")), " ")
 	mp.name = statOut[1][1 : len(statOut[1])-1]
 	mp.setState([]rune(statOut[2])[0])
@@ -101,14 +103,19 @@ func (mp *process) getStat() {
 	mp.cutime, _ = strconv.Atoi(statOut[15])
 	mp.cstime, _ = strconv.Atoi(statOut[16])
 	mp.starttime, _ = strconv.Atoi(statOut[21])
+	out <- struct{}{}
 }
 
 func monProcWrpr(procPath string, pid string) {
+	ch := make(chan struct{})
 	var monproc Monproc
 	monproc = &process{path: procPath, pid: pid}
-	monproc.getCPUSeconds()
-	monproc.getUptime()
-	monproc.getStat()
+	go monproc.getCPUSeconds(ch)
+	go monproc.getUptime(ch)
+	go monproc.getStat(ch)
+	for i := 0; i < 3; i++ {
+		<-ch
+	}
 	monproc.calcCPU()
 	name, status, percent := monproc.getProcessDetails()
 	fmt.Printf("PID: %s\t\tNAME: %s\nSTATUS: %s\tCPU: %f %%\n\n", pid, name, status, percent)
