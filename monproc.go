@@ -7,7 +7,6 @@ package main
 	Intended for Debian Linux Distros
 */
 
-// #include <stdlib.h>
 // #include <unistd.h>
 // static int cpuSeconds() {
 //     return sysconf(_SC_CLK_TCK);
