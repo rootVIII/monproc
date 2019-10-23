@@ -99,36 +99,30 @@ func (mp *process) getStat() {
 	mp.starttime, _ = strconv.Atoi(statOut[21])
 }
 
+func monProcWrpr(procPath string, pid string) {
+	var monproc Monproc
+	monproc = &process{path: procPath, pid: pid}
+	monproc.getUptime()
+	monproc.getCPUSeconds()
+	monproc.getStat()
+	monproc.calcCPU()
+}
+
 // GetProcesses - get percentage of CPU usage per running process
 func GetProcesses() {
 	var path string = "/proc/"
 	files, err := ioutil.ReadDir(path)
 	if err != nil {
-		fmt.Println("Read error. Are you root?")
+		fmt.Println("Read error")
 		os.Exit(1)
 	}
 	// use PID with rest of returned data
 	for _, pid := range files {
-		PID, err := strconv.Atoi(pid.Name())
+		_, err := strconv.Atoi(pid.Name())
 		if err != nil {
 			continue
 		}
-
-		// ** remove this ** //
-		if PID < 2000 {
-			continue
-		}
-		// ***************** //
-		var monproc Monproc
-		monproc = &process{path: path, pid: strconv.Itoa(PID)}
-		monproc.getUptime()
-		monproc.getCPUSeconds()
-		monproc.getStat()
-		monproc.calcCPU()
-
-		// ** remove this when goroutines added ** //
-		break
-		// *************************************** //
+		monProcWrpr(path, pid.Name())
 	}
 }
 
