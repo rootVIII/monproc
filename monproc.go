@@ -33,17 +33,18 @@ type Monproc interface {
 
 type process struct {
 	Monproc
-	path      string
-	uptime    float64
-	utime     int
-	stime     int
-	cutime    int
-	cstime    int
-	starttime int
-	hertz     int
-	state     string
-	pid       string
-	name      string
+	percentage float64
+	uptime     float64
+	utime      int
+	stime      int
+	cutime     int
+	cstime     int
+	starttime  int
+	hertz      int
+	state      string
+	pid        string
+	name       string
+	path       string
 }
 
 func (mp *process) setState(s rune) {
@@ -62,6 +63,13 @@ func (mp *process) setState(s rune) {
 		'P': "Parked",
 	}
 	mp.state = statemap[s]
+}
+
+func (mp *process) calcCPU() {
+	var total int = mp.utime + mp.stime + mp.cutime + mp.cstime
+	var sec float64 = mp.uptime - (float64(mp.starttime) / float64(mp.hertz))
+	percentage := 100 * ((float64(total) / float64(mp.hertz)) / sec)
+	fmt.Printf("%f\n", percentage)
 }
 
 func (mp *process) getCPUSeconds() {
@@ -99,6 +107,7 @@ func GetProcesses() {
 		fmt.Println("Read error. Are you root?")
 		os.Exit(1)
 	}
+	// use PID with rest of returned data
 	for _, pid := range files {
 		PID, err := strconv.Atoi(pid.Name())
 		if err != nil {
