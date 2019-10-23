@@ -25,6 +25,7 @@ import (
 type Monproc interface {
 	calcCPU()
 	getCPUSeconds()
+	getProcessDetails() (string, string, float64)
 	setState(s rune)
 	getUptime()
 	getStat()
@@ -65,11 +66,14 @@ func (mp *process) setState(s rune) {
 	mp.state = statemap[s]
 }
 
+func (mp process) getProcessDetails() (string, string, float64) {
+	return mp.name, mp.state, mp.percentage
+}
+
 func (mp *process) calcCPU() {
 	var total int = mp.utime + mp.stime + mp.cutime + mp.cstime
 	var sec float64 = mp.uptime - (float64(mp.starttime) / float64(mp.hertz))
-	percentage := 100 * ((float64(total) / float64(mp.hertz)) / sec)
-	fmt.Printf("%f\n", percentage)
+	mp.percentage = 100 * ((float64(total) / float64(mp.hertz)) / sec)
 }
 
 func (mp *process) getCPUSeconds() {
@@ -102,10 +106,12 @@ func (mp *process) getStat() {
 func monProcWrpr(procPath string, pid string) {
 	var monproc Monproc
 	monproc = &process{path: procPath, pid: pid}
-	monproc.getUptime()
 	monproc.getCPUSeconds()
+	monproc.getUptime()
 	monproc.getStat()
 	monproc.calcCPU()
+	name, status, percent := monproc.getProcessDetails()
+	fmt.Printf("PID: %s\t\tNAME: %s\nSTATUS: %s\tCPU: %f %%\n\n", pid, name, status, percent)
 }
 
 // GetProcesses - get percentage of CPU usage per running process
