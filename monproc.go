@@ -106,7 +106,7 @@ func (mp *process) getStat(out chan<- struct{}) {
 	out <- struct{}{}
 }
 
-func monProcWrpr(procPath string, pid string) {
+func monProcWrpr(procPath string, pid string, toMain chan<- [3]string) {
 	ch := make(chan struct{})
 	var monproc Monproc
 	monproc = &process{path: procPath, pid: pid}
@@ -119,8 +119,7 @@ func monProcWrpr(procPath string, pid string) {
 	monproc.calcCPU()
 	name, status, percent := monproc.getProcessDetails()
 	results := [3]string{name, status, fmt.Sprintf("%.3f", percent)}
-	fmt.Printf("PID: %s\n", pid)
-	fmt.Printf("%v\n", results)
+	toMain <- results
 }
 
 // GetProcesses - get percentage of CPU usage per running process
@@ -131,13 +130,18 @@ func GetProcesses() {
 		fmt.Println("Read error")
 		os.Exit(1)
 	}
-
+	toMain := make(chan [3]string)
+	var index int
 	for _, pid := range files {
 		_, err := strconv.Atoi(pid.Name())
 		if err != nil {
 			continue
 		}
-		monProcWrpr(path, pid.Name())
+		go monProcWrpr(path, pid.Name(), toMain)
+		index++
+	}
+	for i := 0; i < index; i++ {
+		fmt.Printf("%v\n", <-toMain)
 	}
 }
 
