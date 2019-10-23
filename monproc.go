@@ -118,7 +118,9 @@ func monProcWrpr(procPath string, pid string) {
 	}
 	monproc.calcCPU()
 	name, status, percent := monproc.getProcessDetails()
-	fmt.Printf("PID: %s\t\tNAME: %s\nSTATUS: %s\tCPU: %f %%\n\n", pid, name, status, percent)
+	results := [3]string{name, status, fmt.Sprintf("%.3f", percent)}
+	fmt.Printf("PID: %s\n", pid)
+	fmt.Printf("%v\n", results)
 }
 
 // GetProcesses - get percentage of CPU usage per running process
@@ -129,7 +131,7 @@ func GetProcesses() {
 		fmt.Println("Read error")
 		os.Exit(1)
 	}
-	// use PID with rest of returned data
+
 	for _, pid := range files {
 		_, err := strconv.Atoi(pid.Name())
 		if err != nil {
