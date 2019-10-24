@@ -174,7 +174,7 @@ func GetProcesses() [][]string {
 }
 
 func main() {
-	for _, process := range GetProcesses() {
-		fmt.Printf("%s\n%s\n%s\n%s\n\n", process[0], process[1], process[2], process[3])
+	for _, p := range GetProcesses() {
+		fmt.Printf("%s\n%s\n%s\n%s\n\n", p[0], p[1], p[2], p[3])
 	}
 }
