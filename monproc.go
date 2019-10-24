@@ -121,6 +121,10 @@ func monProcWrpr(procPath string, pid string, toMain chan<- []string) {
 	toMain <- results
 }
 
+func bubbleSort(procs [][]string) {
+	fmt.Printf("%v\n", procs)
+}
+
 // GetProcesses - get percentage of CPU usage per running process
 func GetProcesses() {
 	var path string = "/proc/"
@@ -148,7 +152,7 @@ func GetProcesses() {
 		}
 		final = append(final, resultRow)
 	}
-	fmt.Printf("%v\n", final)
+	bubbleSort(final)
 }
 
 func main() {
