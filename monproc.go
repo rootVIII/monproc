@@ -121,7 +121,7 @@ func monProcWrpr(procPath string, pid string, toMain chan<- []string) {
 	toMain <- results
 }
 
-func bubbleSort(procs [][]string) {
+func bubbleSort(procs [][]string) [][]string {
 	for {
 		sorted := true
 		for i := 0; i < len(procs)-1; i++ {
@@ -129,7 +129,7 @@ func bubbleSort(procs [][]string) {
 				left, _ := strconv.ParseFloat(procs[i][2], 64)
 				right, _ := strconv.ParseFloat(procs[i+1][2], 64)
 				//fmt.Printf("left: %f,  right: %f\n", left, right)
-				if left > right {
+				if left < right {
 					sorted = false
 					temp := procs[i+1]
 					procs[i+1] = procs[i]
@@ -141,13 +141,11 @@ func bubbleSort(procs [][]string) {
 			break
 		}
 	}
-	for i := 0; i < len(procs); i++ {
-		fmt.Printf("%v\n", procs[i])
-	}
+	return procs
 }
 
 // GetProcesses - get percentage of CPU usage per running process
-func GetProcesses() {
+func GetProcesses() [][]string {
 	var path string = "/proc/"
 	files, err := ioutil.ReadDir(path)
 	if err != nil {
@@ -173,9 +171,11 @@ func GetProcesses() {
 		}
 		final = append(final, resultRow)
 	}
-	bubbleSort(final)
+	return bubbleSort(final)
 }
 
 func main() {
-	GetProcesses()
+	for _, process := range GetProcesses() {
+		fmt.Printf("%s\n%s\n%s\n\n", process[0], process[1], process[2])
+	}
 }
