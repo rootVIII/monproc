@@ -125,7 +125,7 @@ func bubbleSort(procs [][]string) [][]string {
 	for {
 		sorted := true
 		for i := 0; i < len(procs)-1; i++ {
-			for j := 0; j < 3; j++ {
+			for j := 0; j < 4; j++ {
 				left, _ := strconv.ParseFloat(procs[i][2], 64)
 				right, _ := strconv.ParseFloat(procs[i+1][2], 64)
 				if left < right {
@@ -175,6 +175,6 @@ func GetProcesses() [][]string {
 
 func main() {
 	for _, process := range GetProcesses() {
-		fmt.Printf("%s\n%s\n%s\n%s\n\n", process[0], process[1], process[2], process[4])
+		fmt.Printf("%s\n%s\n%s\n%s\n\n", process[0], process[1], process[2], process[3])
 	}
 }
