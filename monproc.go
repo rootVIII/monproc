@@ -3,7 +3,6 @@ package main
 /*
 	rootVIII
 	monproc - Displays CPU usage
-
 	Intended for Debian Linux Distros
 */
 
@@ -106,7 +105,7 @@ func (mp *process) getStat(out chan<- struct{}) {
 	out <- struct{}{}
 }
 
-func monProcWrpr(procPath string, pid string, toMain chan<- [3]string) {
+func monProcWrpr(procPath string, pid string, toMain chan<- []string) {
 	ch := make(chan struct{})
 	var monproc Monproc
 	monproc = &process{path: procPath, pid: pid}
@@ -118,7 +117,7 @@ func monProcWrpr(procPath string, pid string, toMain chan<- [3]string) {
 	}
 	monproc.calcCPU()
 	name, status, percent := monproc.getProcessDetails()
-	results := [3]string{name, status, fmt.Sprintf("%.4f", percent)}
+	results := []string{name, status, fmt.Sprintf("%.5f", percent)}
 	toMain <- results
 }
 
@@ -130,7 +129,7 @@ func GetProcesses() {
 		fmt.Println("Read error")
 		os.Exit(1)
 	}
-	toMain := make(chan [3]string)
+	toMain := make(chan []string)
 	var index int
 	for _, pid := range files {
 		_, err := strconv.Atoi(pid.Name())
@@ -140,9 +139,16 @@ func GetProcesses() {
 		go monProcWrpr(path, pid.Name(), toMain)
 		index++
 	}
+	final := make([][]string, 0)
 	for i := 0; i < index; i++ {
-		fmt.Printf("%v\n", <-toMain)
+		temp := <-toMain
+		resultRow := make([]string, len(temp))
+		for j := 0; j < len(temp); j++ {
+			resultRow[j] = temp[j]
+		}
+		final = append(final, resultRow)
 	}
+	fmt.Printf("%v\n", final)
 }
 
 func main() {
