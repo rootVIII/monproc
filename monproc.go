@@ -95,6 +95,11 @@ func (mp *process) getUptime(out chan<- struct{}) {
 
 func (mp *process) getStat(out chan<- struct{}) {
 	statOut := strings.Split(string(mp.rFile(mp.pid+"/stat")), " ")
+	if !strings.Contains(statOut[1], ")") {
+		revisedName := fmt.Sprintf("%s %s", statOut[1], statOut[2])
+		statOut[1] = revisedName
+		statOut = append(statOut[:2], statOut[3:]...)
+	}
 	mp.name = statOut[1][1 : len(statOut[1])-1]
 	mp.setState([]rune(statOut[2])[0])
 	mp.utime, _ = strconv.Atoi(statOut[13])
