@@ -5,6 +5,7 @@ package main
 	monproc - Displays CPU usage per process
 	Intended for Debian Linux Distros
 	24OCT2019
+	USAGE: ./monproc <max results>
 */
 
 // #include <unistd.h>
