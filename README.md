@@ -2,11 +2,8 @@
 
 <pre>
     <code>
-
         Run as a standalone exe:
-
         ./monproc &lt;max records&gt;
-
     </code>
 </pre>
 
