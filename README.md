@@ -15,7 +15,7 @@ maxRecords := 50
 for _, p := range GetProcesses(maxRecords) {
 		fmt.Printf(p)
 	}
-    <code>
+    </code>
 </pre>
 
 <b>References used:</b><br>
