@@ -2,8 +2,9 @@ package main
 
 /*
 	rootVIII
-	monproc - Displays CPU usage
+	monproc - Displays CPU usage per process
 	Intended for Debian Linux Distros
+	24OCT2019
 */
 
 // #include <unistd.h>
@@ -148,7 +149,7 @@ func bubbleSort(procs [][]string) [][]string {
 	return procs
 }
 
-// GetProcesses - get percentage of CPU usage per running process
+// GetProcesses - get percentage of CPU usage per running process.
 func GetProcesses(max int) [][]string {
 	var path string = "/proc/"
 	files, err := ioutil.ReadDir(path)
