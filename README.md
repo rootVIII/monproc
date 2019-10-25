@@ -6,7 +6,7 @@
     <code>
 As a standalone exe:
 
-./monproc <max records>
+./monproc &lt;max records&gt;
 
 
 In your own code:
@@ -18,11 +18,11 @@ for _, p := range GetProcesses(maxRecords) {
     <code>
 </pre>
 
-<b>Page used for reference:</b><br>
+<b>References used:</b><br>
 http://man7.org/linux/man-pages/man5/proc.5.html
 
 
-<img src="https://github.com/rootVIII/monproc/blob/master/.png" alt="stdout">
+<img src="https://github.com/rootVIII/monproc/blob/master/terminal_screenshot.png" alt="stdout">
 <hr>
 This was developed on Ubuntu 18.04.4 LTS.
 <hr>
