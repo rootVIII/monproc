@@ -93,6 +93,7 @@ func (mp *process) getUptime(out chan<- struct{}) {
 	out <- struct{}{}
 }
 
+// check if monproc in mp.name !
 func (mp *process) getStat(out chan<- struct{}) {
 	statOut := strings.Split(string(mp.rFile(mp.pid+"/stat")), " ")
 	if !strings.Contains(statOut[1], ")") {
@@ -114,9 +115,9 @@ func monProcWrpr(procPath string, pid string, toMain chan<- []string) {
 	ch := make(chan struct{})
 	var monproc Monproc
 	monproc = &process{path: procPath, pid: pid}
+	go monproc.getStat(ch)
 	go monproc.getCPUSeconds(ch)
 	go monproc.getUptime(ch)
-	go monproc.getStat(ch)
 	for i := 0; i < 3; i++ {
 		<-ch
 	}
@@ -149,7 +150,7 @@ func bubbleSort(procs [][]string) [][]string {
 }
 
 // GetProcesses - get percentage of CPU usage per running process
-func GetProcesses() [][]string {
+func GetProcesses(max int) [][]string {
 	var path string = "/proc/"
 	files, err := ioutil.ReadDir(path)
 	if err != nil {
@@ -175,11 +176,25 @@ func GetProcesses() [][]string {
 		}
 		final = append(final, resultRow)
 	}
-	return bubbleSort(final)
+	if len(final) < max {
+		return bubbleSort(final)
+	}
+	return bubbleSort(final)[:max]
 }
 
 func main() {
-	for _, p := range GetProcesses() {
+	help := "\nEnter the max records to return.\n"
+	help += "EX: monproc 5  monproc 10  monproc 100   etc.\n\n"
+	if len(os.Args) < 2 {
+		fmt.Printf(help)
+		os.Exit(1)
+	}
+	maxRecords, err := strconv.Atoi(os.Args[1])
+	if err != nil {
+		fmt.Printf("Error" + help)
+		os.Exit(1)
+	}
+	for _, p := range GetProcesses(maxRecords) {
 		fmt.Printf("%s\n%s\n%s\n%s\n\n", p[0], p[1], p[2], p[3])
 	}
 }
