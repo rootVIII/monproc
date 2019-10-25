@@ -192,7 +192,7 @@ func main() {
 		os.Exit(1)
 	}
 	maxRecords, err := strconv.Atoi(os.Args[1])
-	if err != nil {
+	if err != nil || maxRecords < 0 {
 		fmt.Printf("Error" + help)
 		os.Exit(1)
 	}
