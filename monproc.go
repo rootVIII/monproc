@@ -51,8 +51,8 @@ func (mp *process) setState(s rune) {
 	statemap := map[rune]string{
 		'I': "Idle",
 		'R': "Running",
-		'S': "Sleeping in an interruptible wait",
-		'D': "Waiting in uninterruptible disk sleep",
+		'S': "Sleeping",
+		'D': "Waiting",
 		'Z': "Zombie",
 		'T': "Stopped (on a signal)",
 		't': "Tracing stop",
@@ -93,7 +93,6 @@ func (mp *process) getUptime(out chan<- struct{}) {
 	out <- struct{}{}
 }
 
-// check if monproc in mp.name !
 func (mp *process) getStat(out chan<- struct{}) {
 	statOut := strings.Split(string(mp.rFile(mp.pid+"/stat")), " ")
 	if !strings.Contains(statOut[1], ")") {
@@ -123,7 +122,7 @@ func monProcWrpr(procPath string, pid string, toMain chan<- []string) {
 	}
 	monproc.calcCPU()
 	name, status, percent := monproc.getProcessDetails()
-	results := []string{name, pid, fmt.Sprintf("%.5f", percent), status}
+	results := []string{name, pid, fmt.Sprintf("%.2f", percent), status}
 	toMain <- results
 }
 
@@ -174,7 +173,9 @@ func GetProcesses(max int) [][]string {
 		for j := 0; j < len(temp); j++ {
 			resultRow[j] = temp[j]
 		}
-		final = append(final, resultRow)
+		if resultRow[0] != "go" && resultRow[0] != "monproc" {
+			final = append(final, resultRow)
+		}
 	}
 	if len(final) < max {
 		return bubbleSort(final)
@@ -194,7 +195,8 @@ func main() {
 		fmt.Printf("Error" + help)
 		os.Exit(1)
 	}
+	fmt.Printf("%-10s %-30s %-19s  %-10s\n", "PID", "NAME", "CPU%", "STATE")
 	for _, p := range GetProcesses(maxRecords) {
-		fmt.Printf("%s\n%s\n%s\n%s\n\n", p[0], p[1], p[2], p[3])
+		fmt.Printf("%-10s %-30s %-20s %-12s\n", p[1], p[0], p[2], p[3])
 	}
 }
