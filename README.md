@@ -1,5 +1,7 @@
 ###### MONPROC
 
+"It's pretty fast."
+
 <pre>
     <code>
         Run as a standalone exe:
