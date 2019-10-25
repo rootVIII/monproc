@@ -13,8 +13,8 @@ In your own code:
 
 maxRecords := 50
 for _, p := range GetProcesses(maxRecords) {
-		fmt.Printf(p)
-	}
+    fmt.Printf(p)
+}
     </code>
 </pre>
 
