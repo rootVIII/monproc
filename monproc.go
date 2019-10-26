@@ -2,10 +2,11 @@ package main
 
 /*
 	rootVIII
-	monproc - Displays CPU usage per process
+	monproc - Displays CPU usage for each process
 	Intended for Debian Linux Distros
 	24OCT2019
 	USAGE: ./monproc <max results>
+	Max results should be a non-negative integer
 */
 
 // #include <unistd.h>
@@ -185,16 +186,20 @@ func GetProcesses(max int) [][]string {
 	return bubbleSort(final)[:max]
 }
 
-func main() {
+func help() string {
 	help := "\nEnter the max records to return.\n"
 	help += "EX: monproc 5  monproc 10  monproc 100   etc.\n\n"
+	return help
+}
+
+func main() {
 	if len(os.Args) < 2 {
-		fmt.Printf(help)
+		fmt.Printf(help())
 		os.Exit(1)
 	}
 	maxRecords, err := strconv.Atoi(os.Args[1])
 	if err != nil || maxRecords < 0 {
-		fmt.Printf("Error" + help)
+		fmt.Printf("Error" + help())
 		os.Exit(1)
 	}
 	fmt.Printf("%-10s %-30s %-19s  %-10s\n", "PID", "NAME", "CPU%", "STATE")
