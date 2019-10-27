@@ -57,7 +57,7 @@ func (mp *process) setState(s rune) {
 		'S': "Sleeping",
 		'D': "Waiting",
 		'Z': "Zombie",
-		'T': "Stopped (on a signal)",
+		'T': "Stopped",
 		't': "Tracing stop",
 		'X': "Dead",
 		'x': "Dead",
