@@ -1,6 +1,5 @@
 ###### MONPROC
 
-"It's pretty fast."
 
 <pre>
     <code>
