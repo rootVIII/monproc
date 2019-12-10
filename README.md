@@ -4,8 +4,9 @@
 
 <pre>
     <code>
-        Run as a standalone exe:
-        ./monproc &lt;max records&gt;
+        go get -v github.com/rootVIII/monproc
+        go install github.com/rootVIII/monproc
+        monproc 50 (ie: show top 50 processes)
     </code>
 </pre>
 
