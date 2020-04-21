@@ -23,19 +23,7 @@ import (
 	"strings"
 )
 
-// Monproc -  a process monitor for Debian Linux Distros.
-type Monproc interface {
-	calcCPU()
-	getProcessDetails() (string, string, float64)
-	setState(s rune)
-	getUptime(out chan<- struct{})
-	getStat(out chan<- struct{})
-	getCPUSeconds(out chan<- struct{})
-	rFile(p string) []byte
-}
-
 type process struct {
-	Monproc
 	percentage float64
 	uptime     float64
 	utime      int
@@ -115,8 +103,7 @@ func (mp *process) getStat(out chan<- struct{}) {
 
 func monProcWrpr(procPath string, pid string, toMain chan<- []string) {
 	ch := make(chan struct{})
-	var monproc Monproc
-	monproc = &process{path: procPath, pid: pid}
+	var monproc = &process{path: procPath, pid: pid}
 	go monproc.getStat(ch)
 	go monproc.getCPUSeconds(ch)
 	go monproc.getUptime(ch)
