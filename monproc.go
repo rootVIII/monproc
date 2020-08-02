@@ -144,7 +144,7 @@ func GetProcesses(max int) [][]string {
 	files, err := ioutil.ReadDir(path)
 	if err != nil {
 		fmt.Println("Read error")
-		os.Exit(1)
+		os.Exit(2)
 	}
 	toMain := make(chan []string)
 	var index int
@@ -182,12 +182,12 @@ func help() string {
 func main() {
 	if len(os.Args) < 2 {
 		fmt.Printf(help())
-		os.Exit(1)
+		os.Exit(2)
 	}
 	maxRecords, err := strconv.Atoi(os.Args[1])
 	if err != nil || maxRecords < 0 {
 		fmt.Printf("Error" + help())
-		os.Exit(1)
+		os.Exit(2)
 	}
 	fmt.Printf("%-10s %-30s %-19s  %-10s\n", "PID", "NAME", "CPU%", "STATE")
 	for _, p := range GetProcesses(maxRecords) {
