@@ -25,7 +25,7 @@ http://man7.org/linux/man-pages/man5/proc.5.html
 
 <img src="https://github.com/rootVIII/monproc/blob/master/terminal_screenshot.png" alt="stdout">
 
-This was developed/tested on Ubuntu 18.04.4 LTS and MacOS Big Sur.
+This was developed/tested on Ubuntu 18 and Ubuntu 20 LTS.
 <hr>
 <b>Author: rootVIII 24OCT2019</b><br><br>
 
