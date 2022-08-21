@@ -56,7 +56,7 @@ func (mp *process) setState(s rune) {
 	mp.state = statemap[s]
 }
 
-func (mp process) getProcessDetails() (string, string, float64) {
+func (mp *process) getProcessDetails() (string, string, float64) {
 	return mp.name, mp.state, mp.percentage
 }
 
@@ -71,7 +71,7 @@ func (mp *process) getCPUSeconds(out chan<- struct{}) {
 	out <- struct{}{}
 }
 
-func (mp process) rFile(p string) []byte {
+func (mp *process) rFile(p string) []byte {
 	content, _ := ioutil.ReadFile(mp.path + p)
 	return content
 }
